@@ -16,7 +16,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 DEFAULT_DATASET = DATA_DIR / "healthcare-dataset-stroke-data.csv"
 TARGET_COL = "stroke"
 TEST_SIZE = 0.2
-RANDOM_STATE = 42
+RANDOM_STATE = 13
 
 
 def load_dataset(path: str | Path | None = None) -> pd.DataFrame:

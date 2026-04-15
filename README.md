@@ -33,15 +33,16 @@ uv sync --extra boost
 3. **Integration**: Once all 4 models are saved to `artifacts/`, run `05_ensemble.ipynb` to build and compare ensemble strategies.
 
 ### Key rule: everyone uses `src.data_loader.get_train_test_split()`
-This guarantees identical train/test splits across all models (fixed seed = 42).
+
+This guarantees identical train/test splits across all models (fixed seed = 13).
 
 ## Ensemble Strategies
 
 The ensemble notebook (`05_ensemble.ipynb`) evaluates:
 
-| Strategy | Description |
-|---|---|
-| Hard Voting | Majority vote on predicted labels |
-| Soft Voting | Average predicted probabilities |
-| Weighted Voting | Soft voting with weights from CV scores |
-| Stacking | Meta-learner (LogReg) on base model predictions |
+| Strategy        | Description                                     |
+| --------------- | ----------------------------------------------- |
+| Hard Voting     | Majority vote on predicted labels               |
+| Soft Voting     | Average predicted probabilities                 |
+| Weighted Voting | Soft voting with weights from CV scores         |
+| Stacking        | Meta-learner (LogReg) on base model predictions |
