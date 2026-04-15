@@ -8,3 +8,15 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (large files, do not commit)
+data/
+
+# Model artifacts (binary files, do not commit)
+artifacts/**/*.joblib
+
+# OS
+.DS_Store
