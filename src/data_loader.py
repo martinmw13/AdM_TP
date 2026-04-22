@@ -82,9 +82,10 @@ def get_train_test_split(
 
 
 
-def clean_data_id(df: pd.DataFrame) -> pd.DataFrame:
+def clean_data_id_gender(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Realiza la limpieza inicial del dataset eliminando el atributo id .
+    Realiza la limpieza inicial del dataset eliminando el atributo id y el unico registro
+    con genero Other .
 
     Parameters
     ----------
@@ -102,7 +103,8 @@ def clean_data_id(df: pd.DataFrame) -> pd.DataFrame:
         print(f"Columna 'id' eliminada. Shape resultante: {df.shape}")
     else:
         print("La columna 'id' no se encontró en el DataFrame.")
-        
+    # Eliminar el único registro con gender='Other' (outlier extremo)
+    df = df[df['gender'] != 'Other'].reset_index(drop=True)   
     return df
 
 
