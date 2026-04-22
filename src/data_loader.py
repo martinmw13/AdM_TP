@@ -106,45 +106,6 @@ def clean_data_id(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-    
-
-def get_train_test_split(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-    """
-    Divide el dataset en conjuntos de entrenamiento y prueba.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Dataset completo procesado.
-
-    Returns
-    -------
-    tuple
-        (X_train, X_test, y_train, y_test)
-    
-    Notes
-    -----
-    Se utiliza una semilla aleatoria fija (RANDOM_STATE) para garantizar 
-    que los resultados sean reproducibles por todos los miembros del equipo.
-    """
-    X_raw = df.drop(columns=['stroke'])
-    y = df['stroke'].astype(int)
-
-    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
-        X_raw, y, test_size=0.2, stratify=y, random_state=RANDOM_STATE
-    )
-
-    print("Train / Test Split estratificado:")
-    print(f"  X_train: {X_train_raw.shape}  |  X_test: {X_test_raw.shape}")
-    print(f"\n  Proporción stroke en train: {y_train.mean():.4f}")
-    print(f"  Proporción stroke en test:  {y_test.mean():.4f}")
-    print("\n  Estratificación correcta — proporción preservada.")
-
-    return X_train_raw, X_test_raw, y_train, y_test
-
-
-
-
 def impute_bmi_knn(X_train: pd.DataFrame, X_test: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Imputa los valores faltantes de la columna 'bmi' utilizando KNN, evitando la fuga de datos.
