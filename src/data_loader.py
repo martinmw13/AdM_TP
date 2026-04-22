@@ -8,6 +8,7 @@ All team members MUST use these functions to ensure identical train/test sets.
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from pathlib import Path
+from sklearn.impute import KNNImputer
 
 # ============================================================================
 # CONFIGURATION - Update these before starting
@@ -42,12 +43,12 @@ def load_dataset(path: str | Path | None = None) -> pd.DataFrame:
     return df
 
 
+
 def get_train_test_split(
     df: pd.DataFrame,
     target_col: str = TARGET_COL,
     test_size: float = TEST_SIZE,
-    random_state: int = RANDOM_STATE,
-):
+    random_state: int = RANDOM_STATE):
     """Split the dataset into train and test sets.
 
     Uses a FIXED random_state so every team member gets the exact same split.
@@ -78,6 +79,118 @@ def get_train_test_split(
         f"(test_size={test_size}, seed={random_state})"
     )
     return X_train, X_test, y_train, y_test
+
+
+
+def clean_data_id(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Realiza la limpieza inicial del dataset eliminando el atributo id .
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        El DataFrame original que contiene los datos crudos.
+
+    Returns
+    -------
+    pd.DataFrame
+        Un nuevo DataFrame sin la columna 'id'.
+    """
+    if 'id' in df.columns:
+        # Usamos copy() para evitar el SettingWithCopyWarning de pandas
+        df = df.drop(columns=['id']).copy()
+        print(f"Columna 'id' eliminada. Shape resultante: {df.shape}")
+    else:
+        print("La columna 'id' no se encontró en el DataFrame.")
+        
+    return df
+
+
+    
+
+def get_train_test_split(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """
+    Divide el dataset en conjuntos de entrenamiento y prueba.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataset completo procesado.
+
+    Returns
+    -------
+    tuple
+        (X_train, X_test, y_train, y_test)
+    
+    Notes
+    -----
+    Se utiliza una semilla aleatoria fija (RANDOM_STATE) para garantizar 
+    que los resultados sean reproducibles por todos los miembros del equipo.
+    """
+    X_raw = df.drop(columns=['stroke'])
+    y = df['stroke'].astype(int)
+
+    X_train_raw, X_test_raw, y_train, y_test = train_test_split(
+        X_raw, y, test_size=0.2, stratify=y, random_state=RANDOM_STATE
+    )
+
+    print("Train / Test Split estratificado:")
+    print(f"  X_train: {X_train_raw.shape}  |  X_test: {X_test_raw.shape}")
+    print(f"\n  Proporción stroke en train: {y_train.mean():.4f}")
+    print(f"  Proporción stroke en test:  {y_test.mean():.4f}")
+    print("\n  Estratificación correcta — proporción preservada.")
+
+    return X_train_raw, X_test_raw, y_train, y_test
+
+
+
+
+def impute_bmi_knn(X_train: pd.DataFrame, X_test: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Imputa los valores faltantes de la columna 'bmi' utilizando KNN, evitando la fuga de datos.
+
+    Utiliza un subconjunto de características numéricas relevantes para encontrar los 
+    vecinos más cercanos. El imputer se entrena únicamente con el conjunto de 
+    entrenamiento (X_train) para preservar la integridad del conjunto de prueba (X_test).
+
+    Parameters
+    ----------
+    X_train : pd.DataFrame
+        Conjunto de entrenamiento con posibles valores nulos en 'bmi'.
+    X_test : pd.DataFrame
+        Conjunto de prueba con posibles valores nulos en 'bmi'.
+
+    Returns
+    -------
+    X_train : pd.DataFrame
+        DataFrame de entrenamiento con los valores de 'bmi' imputados.
+    X_test : pd.DataFrame
+        DataFrame de prueba con los valores de 'bmi' imputados.
+
+    Notes
+    -----
+    Se utiliza la configuración `weights='distance'`, lo que significa que los vecinos 
+    más cercanos tienen una mayor influencia en el valor imputado que los más lejanos.
+    Las columnas utilizadas para el cálculo son: 'age', 'avg_glucose_level', 'bmi', 
+    'hypertension' y 'heart_disease'.
+    """
+    cols_knn = ['age', 'avg_glucose_level', 'bmi', 'hypertension', 'heart_disease']
+
+    print(f"NaN en bmi (X_train) antes de KNN: {X_train['bmi'].isnull().sum()}")
+    print(f"NaN en bmi (X_test)  antes de KNN: {X_test['bmi'].isnull().sum()}")
+    
+    # weights='distance' es excelente para capturar mejor la similitud local
+    knn_imputer = KNNImputer(n_neighbors=5, weights='distance')
+    
+    # Fit SOLO en X_train — transform en ambos por separado para evitar Data Leakage
+    X_train[cols_knn] = knn_imputer.fit_transform(X_train[cols_knn])
+    X_test[cols_knn]  = knn_imputer.transform(X_test[cols_knn])
+    
+    print(f"\nNaN en bmi (X_train) después de KNN: {X_train['bmi'].isnull().sum()}")
+    print(f"NaN en bmi (X_test)  después de KNN: {X_test['bmi'].isnull().sum()}")
+
+    return X_train, X_test
+    
 
 if __name__ == "__main__":
     df = load_dataset()
