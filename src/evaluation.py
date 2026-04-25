@@ -82,6 +82,18 @@ def plot_roc_curve(model, X_test, y_test, ax=None) -> None:
     """Plot ROC curve with AUC score."""
     if ax is None:
         _, ax = plt.subplots(figsize=(6, 5))
+    if not (hasattr(model, "predict_proba") or hasattr(model, "decision_function")):
+        ax.text(
+            0.5,
+            0.5,
+            "ROC curve not available\n(model has no score method)",
+            ha="center",
+            va="center",
+            fontsize=11,
+        )
+        ax.set_title("ROC Curve")
+        ax.set_axis_off()
+        return
     RocCurveDisplay.from_estimator(model, X_test, y_test, ax=ax)
     ax.plot([0, 1], [0, 1], "k--", alpha=0.5)
     ax.set_title("ROC Curve")
