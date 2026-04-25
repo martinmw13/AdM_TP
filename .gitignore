@@ -17,6 +17,7 @@ data/
 
 # Model artifacts (binary files, do not commit)
 artifacts/**/*.joblib
+!artifacts/model_A/model.joblib
 
 # OS
 .DS_Store
