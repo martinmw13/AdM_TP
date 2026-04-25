@@ -1,0 +1,8 @@
+best_params:
+  C: 2.151886563007024
+  class_weight: balanced
+  gamma: 0.007723332118850141
+  kernel: rbf
+cv_score: 0.20409156687804747
+n_trials: 100
+optimization_metric: average_precision
