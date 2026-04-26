@@ -4,6 +4,12 @@
 **Facultad:** Ingeniería — Universidad de Buenos Aires  
 **Dataset:** [Stroke Prediction Dataset — Kaggle](https://www.kaggle.com/datasets/fedesoriano/stroke-prediction-dataset)
 
+**Integrantes :**
+-  Capón Paul, Lucia Tamara
+- Madrid, Martin
+- Orellana, César Andrés
+- Britez, Leandro
+
 ---
 
 ## Descripción del proyecto
